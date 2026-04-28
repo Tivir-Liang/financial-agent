@@ -43,10 +43,14 @@ def execute_python_code(code_string: str) -> str:
 # ─────────────────────────────────────────────
 class AdvancedTeachingAgent:
     def __init__(self):
-        # 安全地读取 API Key，绝不写死在代码里
+        import os 
+        # 优先尝试从系统环境变量读取
         api_key = os.getenv("DEEPSEEK_API_KEY")
+        
+        # 如果系统里没找到，就直接在终端里弹个提示，让你手动粘贴！
         if not api_key:
-            raise ValueError("❌ 请先配置环境变量 DEEPSEEK_API_KEY 再运行！\nMac终端运行: export DEEPSEEK_API_KEY='你的sk-密码'")
+            print("\n⚠️ 未检测到系统环境变量 DEEPSEEK_API_KEY。")
+            api_key = input("🔑 请直接在此粘贴你的 DeepSeek API Key (sk-...) 并回车：").strip()
             
         self.client = openai.OpenAI(
             api_key=api_key, 
