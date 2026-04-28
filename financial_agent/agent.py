@@ -8,6 +8,7 @@ import ssl
 import traceback
 import pandas as pd
 import numpy as np
+import os 
 
 # ─────────────────────────────────────────────
 # 工具层：Python 代码执行沙盒
@@ -15,8 +16,7 @@ import numpy as np
 def execute_python_code(code_string: str) -> str:
     """改进版：增加自动调用、错误栈追踪和环境兼容性"""
     output_buffer = io.StringIO()
-    
-    # 自动补全 main() 调用
+
     if "def main():" in code_string and "main()" not in code_string.split('\n')[-2:]:
         code_string += "\n\nif __name__ == '__main__':\n    main()"
 
@@ -43,11 +43,16 @@ def execute_python_code(code_string: str) -> str:
 # ─────────────────────────────────────────────
 class AdvancedTeachingAgent:
     def __init__(self):
+        # 安全地读取 API Key，绝不写死在代码里
+        api_key = os.getenv("DEEPSEEK_API_KEY")
+        if not api_key:
+            raise ValueError("❌ 请先配置环境变量 DEEPSEEK_API_KEY 再运行！\nMac终端运行: export DEEPSEEK_API_KEY='你的sk-密码'")
+            
         self.client = openai.OpenAI(
-            api_key="请输入你的DeepSeek API Key", 
+            api_key=api_key, 
             base_url="https://api.deepseek.com"
         )
-        self.history = []
+        self.history = [] 
         
     def _generate_execution_plan(self, user_input: str) -> str:
         history_context = ""
@@ -157,7 +162,6 @@ class AdvancedTeachingAgent:
         请结合我们的上下文，用通俗的比喻解释数据的含义，并基于上述结果得出明确结论。
         """
         
-        # 【新增】携带历史对话数组给讲课导师
         messages = [{"role": m["role"], "content": m["content"]} for m in self.history[-4:]] 
         messages.append({"role": "user", "content": teaching_prompt})
 
@@ -175,14 +179,17 @@ class AdvancedTeachingAgent:
                 full_reply += content
         print("\n")
         
-        # 【新增】将本轮问答计入历史，以备下次追问
         self.history.append({"role": "user", "content": user_input})
         self.history.append({"role": "assistant", "content": full_reply})
 
-if __name__ == "__main__":
+
+# ─────────────────────────────────────────────
+# 极其重要的启动函数（这就是之前报错缺少的开关）
+# ─────────────────────────────────────────────
+def main():
     agent = AdvancedTeachingAgent()
     print("===========================================")
-    print("🎓 你的financial Agent已上线！(输入 'q' 退出)")
+    print("🎓 你的 financial Agent 已上线！(输入 'q' 退出)")
     print("===========================================")
 
     while True:
@@ -194,3 +201,6 @@ if __name__ == "__main__":
             agent.run_research(user_q) 
         else:
             continue
+
+if __name__ == "__main__":
+    main()
