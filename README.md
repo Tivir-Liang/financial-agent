@@ -1,4 +1,4 @@
-<img width="2498" height="1470" alt="image" src="https://github.com/user-attachments/assets/865be3dd-f113-412c-bb56-948341c75164" /># 📈 Financial Agent
+📈 Financial Agent
 
 Financial Agent 是一个专为金融量化分析与学术研究设计的智能体（Agent）。它采用“规划-执行-解读”的 Meta-Agent 双层架构，能够将自然语言的财务或市场研究需求，自动转化为 Python 量化代码，在本地沙盒中抓取数据、计算指标、进行统计回归，并最终将晦涩的数据结果翻译为通俗易懂的业务解析。
 
